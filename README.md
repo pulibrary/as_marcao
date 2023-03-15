@@ -23,5 +23,5 @@ Resources on a schedule.
      in the ArchivesSpace configuration
 
 
-For 1. use a user_defined boolean field, or maybe a new field,  on the resource
-for now, and maybe a screen to see resources with the flag set.
+For 1., for now, use a user_defined boolean field, or maybe a new field on the
+resource, and maybe a screen to see resources with the flag set.
