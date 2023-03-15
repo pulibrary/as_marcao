@@ -15,7 +15,7 @@ Resources on a schedule.
      the last export.
   3. The Archival Objects will be exported in MARC XML format. The specification
      for the mapping is defined by this existing implementation:
-     https://github.com/pulibrary/aspace_helpers/blob/main/reports/aspace2alma/ get_ao2MARC_data.rb
+     https://github.com/pulibrary/aspace_helpers/blob/main/reports/aspace2alma/get_ao2MARC_data.rb
   4. Each export run will generate one MARC XML file with a top level
      <collection> tag and then each Archival Object included in the export in a
      <record> tag within the <collection>.
