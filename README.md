@@ -17,8 +17,8 @@ Resources on a schedule.
      for the mapping is defined by this existing implementation:
      https://github.com/pulibrary/aspace_helpers/blob/main/reports/aspace2alma/get_ao2MARC_data.rb
   4. Each export run will generate one MARC XML file with a top level
-     <collection> tag and then each Archival Object included in the export in a
-     <record> tag within the <collection>.
+     &lt;collection&gt; tag and then each Archival Object included in the export in a
+     &lt;record&gt; tag within the &lt;collection&gt;.
   5. The exported file will be delivered via FTP. The FTP settings will be set
      in the ArchivesSpace configuration
 
