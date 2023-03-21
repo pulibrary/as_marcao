@@ -1,3 +1,9 @@
+# This mapping code is adapted from an earlier implmentation found here:
+#   https://github.com/pulibrary/aspace_helpers/blob/main/reports/aspace2alma/get_ao2MARC_data.rb
+#
+# The `self.map` method expects a JSONModel rendering of an Archival Object with the following
+# fields resolved: subjects, linked_agents, top_container
+
 require 'nokogiri'
 
 class AOMarcMapper
