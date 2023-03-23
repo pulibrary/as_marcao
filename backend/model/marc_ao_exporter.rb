@@ -22,7 +22,7 @@ class MarcAOExporter
       end
     end
 
-    File.open(export_file_path, 'w') do |fh|
+    File.open(export_file_path, 'w:UTF-8') do |fh|
       fh.write(MarcAOMapper.collection_to_marc(ao_jsons))
     end
 
