@@ -6,7 +6,7 @@
 
 require 'nokogiri'
 
-class AOMarcMapper
+class MarcAOMapper
 
   def self.resolves
     [

@@ -1,4 +1,13 @@
 class ArchivesSpaceService < Sinatra::Base
+  Endpoint.get('/marcao/export')
+    .description("Run the marcao exporte")
+    .params()
+    .permissions([])
+    .returns([200, "status"]) \
+  do
+    json_response(MarcAOExporter.run)
+  end
+
   Endpoint.get('/repositories/:repo_id/archival_objects/:id/marc')
     .description("Get a MARC version of the AO")
     .params(
@@ -8,12 +17,12 @@ class ArchivesSpaceService < Sinatra::Base
     .permissions([])
     .returns([200, "MARC"]) \
   do
-    json = resolve_references(ArchivalObject.to_jsonmodel(params[:id]), AOMarcMapper.resolves)
+    json = resolve_references(ArchivalObject.to_jsonmodel(params[:id]), MarcAOMapper.resolves)
 
     [
      200,
      {"Content-Type" => "text/xml"},
-     AOMarcMapper.to_marc(json)
+     MarcAOMapper.to_marc(json)
     ]
   end
 
@@ -33,11 +42,11 @@ class ArchivesSpaceService < Sinatra::Base
       ao_ds = ao_ds.where{system_mtime > since}
     end
 
-    ao_jsons = resolve_references(ArchivalObject.sequel_to_jsonmodel(ao_ds.all), AOMarcMapper.resolves)
+    ao_jsons = resolve_references(ArchivalObject.sequel_to_jsonmodel(ao_ds.all), MarcAOMapper.resolves)
     [
      200,
      {"Content-Type" => "text/xml"},
-     AOMarcMapper.collection_to_marc(ao_jsons)
+     MarcAOMapper.collection_to_marc(ao_jsons)
     ]
   end
 end
