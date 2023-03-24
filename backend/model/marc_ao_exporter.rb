@@ -1,3 +1,6 @@
+require 'date'
+require 'net/sftp'
+
 class MarcAOExporter
 
   def self.run
@@ -11,7 +14,7 @@ class MarcAOExporter
 
     if FileTest.exists?(report_file_path)
       last_report = ASUtils.json_parse(File.read(report_file_path))
-      since = last_report['export_started_at']
+      since = DateTime.parse(last_report['export_started_at'])
       ao_ds = ao_ds.where{system_mtime > since}
     end
 
@@ -25,6 +28,12 @@ class MarcAOExporter
 
     File.open(export_file_path, 'w:UTF-8') do |fh|
       fh.write(MarcAOMapper.collection_to_marc(ao_jsons))
+    end
+
+    if AppConfig.has_key?(:marcao_sftp_host)
+      Net::SFTP.start(AppConfig[:marcao_sftp_host], AppConfig[:marcao_sftp_user], { password: AppConfig[:marcao_sftp_password] }) do |sftp|
+        sftp.upload!(export_file_path, File.join(AppConfig[:marcao_sftp_path], File.basename(export_file_path)))
+      end
     end
 
     report = {

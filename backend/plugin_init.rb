@@ -8,6 +8,14 @@ unless AppConfig.has_key?(:marcao_schedule)
   raise "marcao plugin configuration error: Set AppConfig[:marcao_schedule] to a cron string to specify when the exporter should run."
 end
 
+unless AppConfig.has_key?(:marcao_sftp_host) &&
+       AppConfig.has_key?(:marcao_sftp_user) &&
+       AppConfig.has_key?(:marcao_sftp_password) &&
+       AppConfig.has_key?(:marcao_sftp_path)
+  Log.warn('marcao sftp not configured! Export will not be sent. To enable marcao sftp set these: :marcao_sftp_host :marcao_sftp_user :marcao_sftp_password :marcao_sftp_path')
+end
+
+
 ArchivesSpaceService.settings.scheduler.cron(AppConfig[:marcao_schedule], :tags => 'marcao_exporter', :allow_overlapping => false) do
   MarcAOExporter.run
 end
