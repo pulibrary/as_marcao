@@ -9,9 +9,10 @@ class MarcAOExporter
 
     ao_ds = ArchivalObject.any_repo.filter(:root_record_id => res_ids)
 
-    if FileTest.exists?(export_file_path)
-      mtime = File.new(export_file_path).mtime
-      ao_ds = ao_ds.where{system_mtime > mtime}
+    if FileTest.exists?(report_file_path)
+      last_report = ASUtils.json_parse(File.read(report_file_path))
+      since = last_report['export_started_at']
+      ao_ds = ao_ds.where{system_mtime > since}
     end
 
     ao_jsons = []
@@ -26,7 +27,7 @@ class MarcAOExporter
       fh.write(MarcAOMapper.collection_to_marc(ao_jsons))
     end
 
-    {
+    report = {
       :status => 'ok',
       :export_started_at => start,
       :export_completed_at => Time.now,
@@ -34,10 +35,20 @@ class MarcAOExporter
       :resource_ids_selected => res_ids.join(','),
       :archival_objects_exported => ao_jsons.length,
     }
+
+    File.open(report_file_path, 'w:UTF-8') do |fh|
+      fh.write(report.to_json)
+    end
+
+    report
   end
 
   def self.export_file_path
     File.join(basedir, 'marcao_export.xml')
+  end
+
+  def self.report_file_path
+    File.join(basedir, 'report.json')
   end
 
   def self.basedir
