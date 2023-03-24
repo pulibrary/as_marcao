@@ -1,11 +1,20 @@
 class ArchivesSpaceService < Sinatra::Base
   Endpoint.get('/marcao/export')
-    .description("Run the marcao exporte")
+    .description("Run the marcao exporter")
     .params()
     .permissions([])
     .returns([200, "status"]) \
   do
     json_response(MarcAOExporter.run)
+  end
+
+  Endpoint.get('/marcao/last_report')
+    .description("Get the report from the last marcao exporter run")
+    .params()
+    .permissions([])
+    .returns([200, "report"]) \
+  do
+    json_response(MarcAOExporter.last_report || {:error => 'no report'})
   end
 
   Endpoint.get('/repositories/:repo_id/archival_objects/:id/marc')

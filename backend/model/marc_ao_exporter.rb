@@ -12,8 +12,8 @@ class MarcAOExporter
 
     ao_ds = ArchivalObject.any_repo.filter(:root_record_id => res_ids)
 
-    if FileTest.exists?(report_file_path)
-      last_report = ASUtils.json_parse(File.read(report_file_path))
+    if report = last_report
+      report = ASUtils.json_parse(File.read(report_file_path))
       since = DateTime.parse(last_report['export_started_at'])
       ao_ds = ao_ds.where{system_mtime > since}
     end
@@ -50,6 +50,12 @@ class MarcAOExporter
     end
 
     report
+  end
+
+  def self.last_report
+    if FileTest.exists?(report_file_path)
+      ASUtils.json_parse(File.read(report_file_path))
+    end
   end
 
   def self.export_file_path
