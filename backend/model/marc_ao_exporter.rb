@@ -53,7 +53,7 @@ class MarcAOExporter
   end
 
   def self.last_report
-    if FileTest.exists?(report_file_path)
+    if File.exist?(report_file_path)
       ASUtils.json_parse(File.read(report_file_path))
     end
   end
