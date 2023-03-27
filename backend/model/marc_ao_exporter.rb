@@ -64,7 +64,7 @@ class MarcAOExporter
       :export_started_at => start,
       :export_completed_at => Time.now,
       :export_file => export_file_path,
-      :resource_ids_selected => res_ids.join(','),
+      :resource_ids_selected => res_ids,
       :archival_objects_exported => ao_jsons.length,
     }
 
