@@ -21,13 +21,8 @@ class MarcAOExporter
       ao_ds = ao_ds.where{system_mtime > since}
     end
 
-    ao_jsons = []
-
-    ao_ds.all.group_by(&:repo_id).each do |repo_id, aos|
-      RequestContext.open(:repo_id => repo_id) do
-        ao_jsons += URIResolver.resolve_references(ArchivalObject.sequel_to_jsonmodel(aos), MarcAOMapper.resolves)
-      end
-    end
+    ao_count = ao_ds.count
+    ao_jsons = to_enum(:each_resolved_ao, ao_ds)
 
     File.open(export_file_path + ".tmp", 'w:UTF-8') do |fh|
       fh.write(MarcAOMapper.collection_to_marc(ao_jsons))
@@ -65,7 +60,7 @@ class MarcAOExporter
       :export_completed_at => Time.now,
       :export_file => export_file_path,
       :resource_ids_selected => res_ids,
-      :archival_objects_exported => ao_jsons.length,
+      :archival_objects_exported => ao_count,
     }
 
     File.open(report_file_path + ".tmp", 'w:UTF-8') do |fh|
@@ -75,6 +70,27 @@ class MarcAOExporter
     File.rename(report_file_path + ".tmp", report_file_path)
 
     report
+  end
+
+  def self.each_resolved_ao(ao_ds, &block)
+    grouped_ids = ao_ds
+      .select(:repo_id, :id)
+      .all
+      .group_by(&:repo_id)
+      .map {|repo_id, rows| [repo_id, rows.map {|row| row[:id]}]}
+      .to_h
+
+    grouped_ids.each do |repo_id, ao_ids|
+      ao_ids.each_slice(100) do |batch|
+        RequestContext.open(:repo_id => repo_id) do
+          URIResolver.resolve_references(ArchivalObject.sequel_to_jsonmodel(ArchivalObject.filter(:id => batch).all),
+                                         MarcAOMapper.resolves)
+            .each do |resolved_json|
+            block.call(resolved_json)
+          end
+        end
+      end
+    end
   end
 
   def self.last_report
