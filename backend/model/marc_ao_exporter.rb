@@ -3,20 +3,21 @@ require 'net/sftp'
 
 class MarcAOExporter
 
+  # allowing for transactions in flight
   WINDOW_SECONDS = 5
 
   def self.run
-    start = Time.now - WINDOW_SECONDS
+    start = Time.now
 
     Log.info("MARC AO Exporter running")
 
     res_ids = UserDefined.filter(AppConfig[:marcao_flag_field].intern => 1).filter(Sequel.~(:resource_id => nil)).select(:resource_id).all.map{|r| r[:resource_id]}
 
-    ao_ds = ArchivalObject.any_repo.filter(:root_record_id => res_ids).where { system_mtime < start }
+    ao_ds = ArchivalObject.any_repo.filter(:root_record_id => res_ids)
 
     if report = last_report
       report = ASUtils.json_parse(File.read(report_file_path))
-      since = DateTime.parse(last_report['export_started_at'])
+      since = DateTime.parse(last_report['export_started_at']) - WINDOW_SECONDS
       ao_ds = ao_ds.where{system_mtime > since}
     end
 
