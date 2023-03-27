@@ -26,9 +26,11 @@ class MarcAOExporter
       end
     end
 
-    File.open(export_file_path, 'w:UTF-8') do |fh|
+    File.open(export_file_path + ".tmp", 'w:UTF-8') do |fh|
       fh.write(MarcAOMapper.collection_to_marc(ao_jsons))
     end
+
+    File.rename(export_file_path + ".tmp", export_file_path)
 
     if AppConfig.has_key?(:marcao_sftp_host)
       Net::SFTP.start(AppConfig[:marcao_sftp_host], AppConfig[:marcao_sftp_user], { password: AppConfig[:marcao_sftp_password] }) do |sftp|
@@ -45,9 +47,11 @@ class MarcAOExporter
       :archival_objects_exported => ao_jsons.length,
     }
 
-    File.open(report_file_path, 'w:UTF-8') do |fh|
+    File.open(report_file_path + ".tmp", 'w:UTF-8') do |fh|
       fh.write(report.to_json)
     end
+
+    File.rename(report_file_path + ".tmp", report_file_path)
 
     report
   end
