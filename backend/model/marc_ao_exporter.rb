@@ -3,14 +3,16 @@ require 'net/sftp'
 
 class MarcAOExporter
 
+  WINDOW_SECONDS = 5
+
   def self.run
-    start = Time.now
+    start = Time.now - WINDOW_SECONDS
 
     Log.info("MARC AO Exporter running")
 
     res_ids = UserDefined.filter(AppConfig[:marcao_flag_field].intern => 1).filter(Sequel.~(:resource_id => nil)).select(:resource_id).all.map{|r| r[:resource_id]}
 
-    ao_ds = ArchivalObject.any_repo.filter(:root_record_id => res_ids)
+    ao_ds = ArchivalObject.any_repo.filter(:root_record_id => res_ids).where { system_mtime < start }
 
     if report = last_report
       report = ASUtils.json_parse(File.read(report_file_path))
