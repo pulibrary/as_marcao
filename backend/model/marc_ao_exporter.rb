@@ -33,8 +33,26 @@ class MarcAOExporter
     File.rename(export_file_path + ".tmp", export_file_path)
 
     if AppConfig.has_key?(:marcao_sftp_host)
-      Net::SFTP.start(AppConfig[:marcao_sftp_host], AppConfig[:marcao_sftp_user], { password: AppConfig[:marcao_sftp_password] }) do |sftp|
-        sftp.upload!(export_file_path, File.join(AppConfig[:marcao_sftp_path], File.basename(export_file_path)))
+      max_retries = 10
+
+      max_retries.times do |retry_count|
+        if retry_count > 0
+          Log.info("Retrying SFTP upload (retry number #{retry_count})")
+        end
+
+        Net::SFTP.start(AppConfig[:marcao_sftp_host], AppConfig[:marcao_sftp_user], { password: AppConfig[:marcao_sftp_password] }) do |sftp|
+          sftp.upload!(export_file_path, File.join(AppConfig[:marcao_sftp_path], File.basename(export_file_path)))
+        end
+        break
+      rescue
+        Log.warn("Upload to SFTP failed: #{$!}")
+        if (retry_count + 1) < max_retries
+          remaining_retries = max_retries - retry_count - 1
+          $stderr.puts("Will retry #{remaining_retries} more time#{((remaining_retries == 1) ? '' : 's')}")
+          sleep 30
+        else
+          Log.error("SFTP upload has failed #{max_retries} times.  Giving up!")
+        end
       end
     end
 
