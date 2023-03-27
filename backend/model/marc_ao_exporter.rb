@@ -35,7 +35,7 @@ class MarcAOExporter
 
     File.rename(export_file_path + ".tmp", export_file_path)
 
-    if AppConfig.has_key?(:marcao_sftp_host)
+    if AppConfig.has_key?(:marcao_sftp_enabled)
       max_retries = 10
 
       max_retries.times do |retry_count|
