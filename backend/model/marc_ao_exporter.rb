@@ -17,7 +17,7 @@ class MarcAOExporter
 
     if report = last_report
       report = ASUtils.json_parse(File.read(report_file_path))
-      since = DateTime.parse(last_report['export_started_at']) - WINDOW_SECONDS
+      since = DateTime.parse(last_report['export_started_at']).to_time - WINDOW_SECONDS
       ao_ds = ao_ds.where{system_mtime > since}
     end
 
