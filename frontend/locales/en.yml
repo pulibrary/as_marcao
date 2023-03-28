@@ -1,8 +1,8 @@
 en:
   marcao:
     report:
-      title: Marc AO Report
-      button_label: Marc AO Report
+      title: MARC AO Report
+      button_label: MARC AO Report
       last_report_title: Last Export
       status: Status
       export_started_at: Started At

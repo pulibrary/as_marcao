@@ -25,6 +25,12 @@ Then the export file is uploaded via SFTP using the specified configuration.
 Each export run will only export AOs that have been modified since the last
 export. To force a full export, remove the `report.json` file.
 
+Information about the last export and configuration can be viewed by system
+administrators in the ArchivesSpace Staff interface.
+```
+  System > MARC AO Report
+```
+
 
 ## Installation
 
