@@ -20,6 +20,13 @@
                 <div class="col-sm-9 label-only"><%= @report['status'] %></div>
               </div>
 
+              <% if @report['error'] %>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label"><%= I18n.t("marcao.report.error") %></label>
+                  <div class="col-sm-9 label-only"><%= @report['error'] %></div>
+                </div>
+              <% end %>
+
               <div class="form-group">
                 <label class="col-sm-2 control-label"><%= I18n.t("marcao.report.export_started_at") %></label>
                 <div class="col-sm-9 label-only"><%= @report['export_started_at'] %></div>

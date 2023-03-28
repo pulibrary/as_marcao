@@ -5,6 +5,7 @@ en:
       button_label: MARC AO Report
       last_report_title: Last Export
       status: Status
+      error: Error
       export_started_at: Started At
       export_completed_at: Completed At
       resource_ids_selected: Resource IDs
