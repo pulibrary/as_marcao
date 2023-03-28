@@ -86,10 +86,12 @@ The path on the SFTP server to upload the exported records to.
 ## Backend Endpoints
 
 The plugin provides backend endpoints that allow for running marcao manually.
+Only system administrators have permission to access these endpoints.
 
 ```
   GET /marcao/export
   GET /marcao/last_report
+  GET /repositories/:repo_id/archival_objects/:id/marcao
   GET /repositories/:repo_id/resources/:id/marcao
 ```
 
@@ -99,6 +101,10 @@ just as though it had run under the scheduler.
 
 ### /marcao/last_report
 Returns the report of the last export as JSON.
+
+### /repositories/:repo_id/archival_objects/:id/marcao
+Returns the MARC XML for the Archival Object. The XML returned is just the
+&lt;record&gt; tag, ie. not wrapped in a &lt;collection&gt; tag.
 
 ### /repositories/:repo_id/resources/:id/marcao
 Returns the MARC XML for the Archival Objects under the Resource.
