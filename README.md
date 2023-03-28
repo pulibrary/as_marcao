@@ -11,11 +11,11 @@ The plugin is designed to run under a schedule, specified in configuration (see
 below).
 
 Each run will export all of the Archival Objects belonging to all Resources that
-have a flag set (a User Defined Boolean field) in one Marc XML file. The top
+have a flag set (a User Defined Boolean field) in one MARC XML file. The top
 level tag will be a &lt;collection&gt; tag, then each AO will be a
 &lt;record&gt; tag within it.
 
-The Marc XML is exported to a file called `marcao/marcao_export.xml` in
+The MARC XML is exported to a file called `marcao/marcao_export.xml` in
 ArchivesSpace's shared data area. Another file is generated called
 `marcao/report.json`. This contains metadata about the last export run -- the
 one that produced the export file.
@@ -93,7 +93,7 @@ just as though it had run under the scheduler.
 Returns the report of the last export as JSON.
 
 ### /repositories/:repo_id/resources/:id/marcao
-Returns the Marc XML for the Archival Objects under the Resource.
+Returns the MARC XML for the Archival Objects under the Resource.
 It accepts an optional `since` parameter that specifies a Datetime.
 Only AOs modified since that Datetime will be included.
 Examples: `since=2023-03-01`, `since=2023-03-01T12:00:00`
