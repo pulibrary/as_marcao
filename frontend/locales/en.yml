@@ -1,3 +1,5 @@
 en:
   marcao:
-    report_button_label: Marc AO Report
+    report:
+      title: Marc AO Report
+      button_label: Marc AO Report

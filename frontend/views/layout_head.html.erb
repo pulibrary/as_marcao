@@ -1,6 +1,6 @@
 <% if user_can?('administer_system') %>
   <script type="text/template" id="marcaoReportButtonTemplate">
-    <%= link_to I18n.t("marcao.report_button_label"), {:controller => :marcao, :action => :report} %>
+    <%= link_to I18n.t("marcao.report.button_label"), {:controller => :marcao, :action => :report} %>
   </script>
 
   <script>
