@@ -21,6 +21,8 @@ ArchivesSpace's shared data area. Another file is generated called
 one that produced the export file.
 
 Then the export file is uploaded via SFTP using the specified configuration.
+The SFTP upload will be retried up to 10 times at 30 second intervals to
+allow for transient network issues.
 
 Each export run will only export AOs that have been modified since the last
 export. To force a full export, remove the `report.json` file.
