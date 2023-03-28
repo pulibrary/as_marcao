@@ -3,3 +3,21 @@ en:
     report:
       title: Marc AO Report
       button_label: Marc AO Report
+      last_report_title: Last Report
+      status: Status
+      export_started_at: Started At
+      export_completed_at: Completed At
+      resource_ids_selected: Resource IDs
+      archival_objects_exported: AOs Exported
+      export_file: Export File Path
+    configuration:
+      title: Configuration
+      schedule: Schedule
+      resource_selector: Resource Selector
+      flag_field: Resource Selector
+      sftp_enabled: SFTP
+      sftp_not_enabled: NOT ENABLED
+      sftp_host: SFTP Host
+      sftp_user: SFTP User
+      sftp_password: SFTP Password
+      sftp_path: SFTP Path
