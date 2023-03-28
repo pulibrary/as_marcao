@@ -9,15 +9,14 @@ class MarcAOExporter
   def self.run
     start = Time.now
 
-    Log.info("MARC AO Exporter running")
+    Log.info("marcao: MARC AO Exporter running")
 
     res_ids = UserDefined.filter(AppConfig[:marcao_flag_field].intern => 1).filter(Sequel.~(:resource_id => nil)).select(:resource_id).all.map{|r| r[:resource_id]}
 
     ao_ds = ArchivalObject.any_repo.filter(:root_record_id => res_ids)
 
     if report = last_report
-      report = ASUtils.json_parse(File.read(report_file_path))
-      since = DateTime.parse(last_report['export_started_at']).to_time - WINDOW_SECONDS
+      since = DateTime.parse(report['export_started_at']).to_time - WINDOW_SECONDS
       ao_ds = ao_ds.where{system_mtime > since}
     end
 
@@ -35,7 +34,7 @@ class MarcAOExporter
 
       max_retries.times do |retry_count|
         if retry_count > 0
-          Log.info("Retrying SFTP upload (retry number #{retry_count})")
+          Log.info("marcao: Retrying SFTP upload (retry number #{retry_count})")
         end
 
         Net::SFTP.start(AppConfig[:marcao_sftp_host], AppConfig[:marcao_sftp_user], { password: AppConfig[:marcao_sftp_password] }) do |sftp|
@@ -43,13 +42,13 @@ class MarcAOExporter
         end
         break
       rescue
-        Log.warn("Upload to SFTP failed: #{$!}")
+        Log.warn("marcao: Upload to SFTP failed: #{$!}")
         if (retry_count + 1) < max_retries
           remaining_retries = max_retries - retry_count - 1
-          $stderr.puts("Will retry #{remaining_retries} more time#{((remaining_retries == 1) ? '' : 's')}")
+          Log.warn("marcao: Will retry #{remaining_retries} more time#{((remaining_retries == 1) ? '' : 's')}")
           sleep 30
         else
-          Log.error("SFTP upload has failed #{max_retries} times.  Giving up!")
+          Log.error("marcao: SFTP upload has failed #{max_retries} times.  Giving up!")
         end
       end
     end
