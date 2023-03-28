@@ -8,6 +8,7 @@ class MarcAOExporter
 
   def self.run
     start = Time.now
+    status = :ok
 
     Log.info("marcao: MARC AO Exporter running")
 
@@ -48,13 +49,16 @@ class MarcAOExporter
           Log.warn("marcao: Will retry #{remaining_retries} more time#{((remaining_retries == 1) ? '' : 's')}")
           sleep 30
         else
+          status = :sftp_fail
           Log.error("marcao: SFTP upload has failed #{max_retries} times.  Giving up!")
         end
       end
+    else
+      status = :no_sftp
     end
 
     report = {
-      :status => 'ok',
+      :status => status,
       :export_started_at => start,
       :export_completed_at => Time.now,
       :export_file => export_file_path,
