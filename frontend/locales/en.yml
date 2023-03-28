@@ -3,7 +3,7 @@ en:
     report:
       title: Marc AO Report
       button_label: Marc AO Report
-      last_report_title: Last Report
+      last_report_title: Last Export
       status: Status
       export_started_at: Started At
       export_completed_at: Completed At
