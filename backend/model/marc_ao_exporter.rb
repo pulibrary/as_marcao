@@ -9,6 +9,7 @@ class MarcAOExporter
   def self.run
     start = Time.now
     status = :ok
+    error = nil
 
     Log.info("marcao: MARC AO Exporter running")
 
@@ -24,37 +25,45 @@ class MarcAOExporter
     ao_count = ao_ds.count
     ao_jsons = to_enum(:each_resolved_ao, ao_ds)
 
-    File.open(export_file_path + ".tmp", 'w:UTF-8') do |fh|
-      fh.write(MarcAOMapper.collection_to_marc(ao_jsons))
+    begin
+      File.open(export_file_path + ".tmp", 'w:UTF-8') do |fh|
+        fh.write(MarcAOMapper.collection_to_marc(ao_jsons))
+      end
+
+      File.rename(export_file_path + ".tmp", export_file_path)
+    rescue => e
+      status = :export_fail
+      error = e.message
     end
 
-    File.rename(export_file_path + ".tmp", export_file_path)
+    if status == :ok
+      if AppConfig[:marcao_sftp_enabled]
+        max_retries = 10
 
-    if AppConfig[:marcao_sftp_enabled]
-      max_retries = 10
+        max_retries.times do |retry_count|
+          if retry_count > 0
+            Log.info("marcao: Retrying SFTP upload (retry number #{retry_count})")
+          end
 
-      max_retries.times do |retry_count|
-        if retry_count > 0
-          Log.info("marcao: Retrying SFTP upload (retry number #{retry_count})")
+          Net::SFTP.start(AppConfig[:marcao_sftp_host], AppConfig[:marcao_sftp_user], { password: AppConfig[:marcao_sftp_password] }) do |sftp|
+            sftp.upload!(export_file_path, File.join(AppConfig[:marcao_sftp_path], File.basename(export_file_path)))
+          end
+          break
+        rescue => e
+          Log.warn("marcao: Upload to SFTP failed: #{$!}")
+          if (retry_count + 1) < max_retries
+            remaining_retries = max_retries - retry_count - 1
+            Log.warn("marcao: Will retry #{remaining_retries} more time#{((remaining_retries == 1) ? '' : 's')}")
+            sleep 30
+          else
+            status = :sftp_fail
+            errror = e.message
+            Log.error("marcao: SFTP upload has failed #{max_retries} times.  Giving up!")
+          end
         end
-
-        Net::SFTP.start(AppConfig[:marcao_sftp_host], AppConfig[:marcao_sftp_user], { password: AppConfig[:marcao_sftp_password] }) do |sftp|
-          sftp.upload!(export_file_path, File.join(AppConfig[:marcao_sftp_path], File.basename(export_file_path)))
-        end
-        break
-      rescue
-        Log.warn("marcao: Upload to SFTP failed: #{$!}")
-        if (retry_count + 1) < max_retries
-          remaining_retries = max_retries - retry_count - 1
-          Log.warn("marcao: Will retry #{remaining_retries} more time#{((remaining_retries == 1) ? '' : 's')}")
-          sleep 30
-        else
-          status = :sftp_fail
-          Log.error("marcao: SFTP upload has failed #{max_retries} times.  Giving up!")
-        end
+      else
+        status = :no_sftp
       end
-    else
-      status = :no_sftp
     end
 
     report = {
@@ -65,6 +74,8 @@ class MarcAOExporter
       :resource_ids_selected => res_ids,
       :archival_objects_exported => ao_count,
     }
+
+    report[:error] = error if error
 
     File.open(report_file_path + ".tmp", 'w:UTF-8') do |fh|
       fh.write(report.to_json)
