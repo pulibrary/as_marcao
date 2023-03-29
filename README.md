@@ -4,6 +4,10 @@
 An ArchivesSpace plugin for exporting Archival Objects as MARC XML for selected
 Resources on a schedule.
 
+This plugin was developed against ArchivesSpace v3.2, but it should be fine on
+any recent version.
+
+Developed by Hudson Molonglo for Princeton University.
 
 ## Overview
 
