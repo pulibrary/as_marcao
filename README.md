@@ -10,10 +10,10 @@ Resources on a schedule.
 The plugin is designed to run under a schedule, specified in configuration (see
 below).
 
-Each run will export all of the Archival Objects belonging to all Resources that
-have a flag set (a User Defined Boolean field) in one MARC XML file. The top
-level tag will be a &lt;collection&gt; tag, then each AO will be a
-&lt;record&gt; tag within it.
+Each run will export all of the Archival Objects, modified since the last run,
+belonging to all Resources that have a flag set (a User Defined Boolean field)
+in one MARC XML file. The top level tag will be a &lt;collection&gt; tag, then
+each AO will be a &lt;record&gt; tag within it.
 
 The MARC XML is exported to a file called `marcao/marcao_export.xml` in
 ArchivesSpace's shared data area. Another file is generated called
