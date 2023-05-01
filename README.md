@@ -63,6 +63,7 @@ Sample configuration:
   AppConfig[:marcao_sftp_user] = 'a_user'
   AppConfig[:marcao_sftp_password] = 'secret password'
   AppConfig[:marcao_sftp_path] = '/remote/path'
+  AppConfig[:marcao_sftp_timeout] = 30
 ```
 
 ### marcao_schedule
@@ -85,6 +86,9 @@ The password to authenticate with on the SFTP server.
 
 ### marcao_sftp_path
 The path on the SFTP server to upload the exported records to.
+
+### marcao_sftp_timeout
+Timeout in seconds to use when connecting to the SFTP server (default 30).
 
 
 ## Report

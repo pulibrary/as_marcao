@@ -45,7 +45,8 @@ class MarcAOExporter
             Log.info("marcao: Retrying SFTP upload (retry number #{retry_count})")
           end
 
-          Net::SFTP.start(AppConfig[:marcao_sftp_host], AppConfig[:marcao_sftp_user], { password: AppConfig[:marcao_sftp_password] }) do |sftp|
+          Net::SFTP.start(AppConfig[:marcao_sftp_host], AppConfig[:marcao_sftp_user],
+                          { password: AppConfig[:marcao_sftp_password], timeout: AppConfig[:marcao_sftp_timeout] }) do |sftp|
             sftp.upload!(export_file_path, File.join(AppConfig[:marcao_sftp_path], File.basename(export_file_path)))
           end
           break

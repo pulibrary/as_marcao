@@ -12,6 +12,13 @@ if AppConfig.has_key?(:marcao_sftp_host) &&
     AppConfig.has_key?(:marcao_sftp_user) &&
     AppConfig.has_key?(:marcao_sftp_password) &&
     AppConfig.has_key?(:marcao_sftp_path)
+  if AppConfig.has_key?(:marcao_sftp_timeout)
+    unless AppConfig[:marcao_sftp_timeout].is_a?(Integer)
+      raise "marcao plugin configuration error: AppConfig[:marcao_sftp_timeout] must be an integer."
+    end
+  else
+    AppConfig[:marcao_sftp_timeout] = 30
+  end
   AppConfig[:marcao_sftp_enabled] = true
 else
   AppConfig[:marcao_sftp_enabled] = false
