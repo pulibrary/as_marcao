@@ -1,5 +1,6 @@
 require 'date'
-require 'net/sftp'
+
+require_relative '../lib/sftp_uploader'
 
 class MarcAOExporter
 
@@ -45,10 +46,17 @@ class MarcAOExporter
             Log.info("marcao: Retrying SFTP upload (retry number #{retry_count})")
           end
 
-          Net::SFTP.start(AppConfig[:marcao_sftp_host], AppConfig[:marcao_sftp_user],
-                          { password: AppConfig[:marcao_sftp_password], timeout: AppConfig[:marcao_sftp_timeout] }) do |sftp|
-            sftp.upload!(export_file_path, File.join(AppConfig[:marcao_sftp_path], File.basename(export_file_path)))
+          sftp = SFTPUploader.new(AppConfig[:marcao_sftp_host],
+                                  AppConfig[:marcao_sftp_user],
+                                  AppConfig[:marcao_sftp_password],
+                                  :connect_timeout => AppConfig[:marcao_sftp_timeout])
+
+          begin
+            sftp.upload(export_file_path, File.join(AppConfig[:marcao_sftp_path], File.basename(export_file_path)))
+          ensure
+            sftp.finish!
           end
+
           break
         rescue => e
           Log.warn("marcao: Upload to SFTP failed: #{$!}")
@@ -58,7 +66,6 @@ class MarcAOExporter
             sleep 30
           else
             status = :sftp_fail
-            errror = e.message
             Log.error("marcao: SFTP upload has failed #{max_retries} times.  Giving up!")
           end
         end

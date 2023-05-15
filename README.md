@@ -40,15 +40,6 @@ administrators in the ArchivesSpace Staff interface.
 
 ## Installation
 
-The plugin requires a Gem (net/sftp). After installation run the initialize
-script to import the Gem, like this:
-```
-  # Linux
-  ./scripts/initialize-plugin.sh as_marcao
-  # Windows
-  scripts\initialize-plugin.bat as_marcao
-```
-
 The plugin has no other special installation requirements.
 No template overrides.
 No database migrations.
