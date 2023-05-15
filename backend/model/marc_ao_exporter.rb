@@ -49,7 +49,7 @@ class MarcAOExporter
           sftp = SFTPUploader.new(AppConfig[:marcao_sftp_host],
                                   AppConfig[:marcao_sftp_user],
                                   AppConfig[:marcao_sftp_password],
-                                  :connect_timeout => AppConfig[:marcao_sftp_timeout])
+                                  :connect_timeout_seconds => AppConfig[:marcao_sftp_timeout])
 
           begin
             sftp.upload(export_file_path, File.join(AppConfig[:marcao_sftp_path], File.basename(export_file_path)))
@@ -60,6 +60,7 @@ class MarcAOExporter
           break
         rescue => e
           Log.warn("marcao: Upload to SFTP failed: #{$!}")
+          error = e.inspect
           if (retry_count + 1) < max_retries
             remaining_retries = max_retries - retry_count - 1
             Log.warn("marcao: Will retry #{remaining_retries} more time#{((remaining_retries == 1) ? '' : 's')}")

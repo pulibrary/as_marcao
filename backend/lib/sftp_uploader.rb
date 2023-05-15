@@ -11,8 +11,8 @@ class SFTPUploader
     @ssh_client = Java::net.schmizz.sshj.SSHClient.new
     @ssh_client.addHostKeyVerifier(Java::net.schmizz.sshj.transport.verification.PromiscuousVerifier.new)
 
-    if (connect_timeout = opts.fetch(:connect_timeout, nil))
-      @ssh_client.set_connect_timeout(connect_timeout)
+    if (connect_timeout = opts.fetch(:connect_timeout_seconds, nil))
+      @ssh_client.set_connect_timeout(connect_timeout * 1000)
     end
 
     @ssh_client.connect(hostname, 22)
