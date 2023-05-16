@@ -18,8 +18,8 @@ class MarcAOExporter
 
     ao_ds = ArchivalObject.any_repo.filter(:root_record_id => res_ids)
 
-    if report = last_report
-      since = DateTime.parse(report['export_started_at']).to_time - WINDOW_SECONDS
+    if (report = last_report) && report['last_success_at']
+      since = DateTime.parse(report['last_success_at']).to_time - WINDOW_SECONDS
       ao_ds = ao_ds.where{system_mtime > since}
     end
 
@@ -60,13 +60,13 @@ class MarcAOExporter
           break
         rescue => e
           Log.warn("marcao: Upload to SFTP failed: #{$!}")
-          error = e.inspect
           if (retry_count + 1) < max_retries
             remaining_retries = max_retries - retry_count - 1
             Log.warn("marcao: Will retry #{remaining_retries} more time#{((remaining_retries == 1) ? '' : 's')}")
             sleep 30
           else
             status = :sftp_fail
+            error = e.inspect
             Log.error("marcao: SFTP upload has failed #{max_retries} times.  Giving up!")
           end
         end
@@ -77,6 +77,7 @@ class MarcAOExporter
 
     report = {
       :status => status,
+      :last_success_at => status == :ok ? start : report['last_success_at'],
       :export_started_at => start,
       :export_completed_at => Time.now,
       :export_file => export_file_path,
