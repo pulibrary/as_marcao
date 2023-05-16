@@ -6,6 +6,8 @@ en:
       last_report_title: Last Export
       status: Status
       error: Error
+      never: Never
+      last_success_at: Last Success At
       export_started_at: Started At
       export_completed_at: Completed At
       resource_ids_selected: Resource IDs

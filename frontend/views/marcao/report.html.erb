@@ -28,6 +28,11 @@
               <% end %>
 
               <div class="form-group">
+                <label class="col-sm-2 control-label"><%= I18n.t("marcao.report.last_success_at") %></label>
+                <div class="col-sm-9 label-only"><%= @report['last_success_at'] || I18n.t("marcao.report.never") %></div>
+              </div>
+
+              <div class="form-group">
                 <label class="col-sm-2 control-label"><%= I18n.t("marcao.report.export_started_at") %></label>
                 <div class="col-sm-9 label-only"><%= @report['export_started_at'] %></div>
               </div>
