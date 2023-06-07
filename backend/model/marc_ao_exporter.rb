@@ -77,7 +77,7 @@ class MarcAOExporter
 
     report = {
       :status => status,
-      :last_success_at => status == :ok ? start : report['last_success_at'],
+      :last_success_at => [:ok, :no_sftp].include?(status) ? start : report['last_success_at'],
       :export_started_at => start,
       :export_completed_at => Time.now,
       :export_file => export_file_path,

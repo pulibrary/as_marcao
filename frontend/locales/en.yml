@@ -5,6 +5,7 @@ en:
       button_label: MARC AO Report
       last_report_title: Last Export
       status: Status
+      no_report: No report available. Either it has yet to complete a successful run, or the report file has been removed.
       error: Error
       never: Never
       last_success_at: Last Success At
