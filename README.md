@@ -107,6 +107,8 @@ The report has the following information:
       - The date and time that the export run completed.
   - `export_file`
       - The absolute file path of the exported file. 
+  - `sftp_host`
+      - The SFTP host as configured at the time of the last export.
   - `resource_ids_selected`
       - The list of Resource IDs that were included in the export.
   - `archival_objects_exported`
