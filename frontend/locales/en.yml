@@ -14,6 +14,7 @@ en:
       resource_ids_selected: Resource IDs
       archival_objects_exported: AOs Exported
       export_file: Export File Path
+      sftp_host: SFTP Host
     configuration:
       title: Configuration
       schedule: Schedule
