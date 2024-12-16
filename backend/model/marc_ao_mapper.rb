@@ -166,6 +166,12 @@ class MarcAOMapper
     tag035 = "<datafield ind1=' ' ind2=' ' tag='035'>
           <subfield code='a'>(PULFA)#{ref_id}</subfield>
           </datafield>"
+    tag040 = '<datafield ind1=" " ind2=" " tag="040">
+        <subfield code="a">NjP</subfield>
+        <subfield code="b">eng</subfield>
+        <subfield code="e">dacs</subfield>
+        <subfield code="c">NjP</subfield>
+        </datafield>'
     # addresses github 181 'Language	041'
     tag041 = "<datafield ind1=' ' ind2=' ' tag='041'>
             <subfield code='c'>#{tag008.content[35..37]}</subfield>
@@ -408,6 +414,7 @@ class MarcAOMapper
             #{tag003}
             #{tag008}
             #{tag035}
+            #{tag040}
             #{tag041}
             #{tag046 ||= ''}
             #{tag099}
