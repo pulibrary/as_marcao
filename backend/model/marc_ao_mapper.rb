@@ -7,13 +7,12 @@
 require 'nokogiri'
 
 class MarcAOMapper
-
   def self.resolves
     [
-     'subjects',
-     'linked_agents',
-     'top_container',
-     'top_container::container_locations',
+      'subjects',
+      'linked_agents',
+      'top_container',
+      'top_container::container_locations'
     ]
   end
 
@@ -33,14 +32,13 @@ class MarcAOMapper
   end
 
   def self.collection_to_marc(ao_jsons)
-
     header = '<collection xmlns="http://www.loc.gov/MARC21/slim"
                           xmlns:marc="http://www.loc.gov/MARC21/slim"
                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                           xsi:schemaLocation="http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd">'
     footer = '</collection>'
 
-    records = ao_jsons.map{|json| to_marc(json)}.join("\n")
+    records = ao_jsons.map {|json| to_marc(json)}.join("\n")
 
     [header, records, footer].join("\n")
   end
@@ -123,8 +121,30 @@ class MarcAOMapper
       }
     end
 
+    #get instances
+    instances = get_ao['instances']
+
+    #map instance types
+    leader_06 = instances.map do |instance|
+      case instance['instance_type']
+      when "audio"
+        "i"
+      when "books"
+        "a"
+      when "computer_disks"
+        "m"
+      when "graphic_materials"
+        "k"
+      when "microform" || "moving_images"
+        "g"
+      else
+        "t"
+      end
+    end
+
     # process locations
-    instances = get_ao['instances'].select {|instance| instance['instance_type'] == "mixed_materials"}
+    instances.select {|instance| instance['instance_type'] == "mixed_materials"}
+
     #process containers first
     top_containers = instances.map do |instance|
       if instance['sub_container'].nil? == false
@@ -134,11 +154,9 @@ class MarcAOMapper
       end
     end
 
-    unless top_containers.empty?
-      unless top_containers.first['container_locations'].empty?
+    if !top_containers.empty? && !top_containers.first['container_locations'].empty?
         top_container_location_code = top_containers.first['container_locations'][0]['_resolved']['classification']
       end
-    end
 
     #process linked subjects
     subjects = get_ao['subjects']
@@ -158,7 +176,7 @@ class MarcAOMapper
       }
     end
     # add controlfields
-    leader = '<leader>00000ntmaa22000002u 4500</leader>'
+    leader = "<leader>00000n#{leader_06[0]}maa22000002u 4500</leader>"
     tag001 = "<controlfield tag='001'>#{ref_id}</controlfield>"
     tag003 = "<controlfield tag='003'>PULFA</controlfield>"
     tag008 = Nokogiri::XML.fragment("<controlfield tag='008'>000000#{tag008_date_type}#{date1}#{date2}xx      |           #{tag008_langcode} d</controlfield>")
@@ -195,7 +213,6 @@ class MarcAOMapper
         "<subfield code = 'f'>#{date1}</subfield>"
       elsif date2 && date1 != '    '
         "<subfield code = 'f'>#{date1}-#{date2}</subfield>"
-      else nil
       end
     tag245 = "<datafield ind1=' ' ind2=' ' tag='245'>
           <subfield code = 'a'>#{xml_escape(title)}</subfield>
@@ -209,7 +226,7 @@ class MarcAOMapper
       tag300 =
         if extents.count > 1
           repeatable_subfields =
-            extents[1..-1].map do |extent|
+            extents[1..].map do |extent|
           "<subfield code = 'a'>#{extent['number']}</subfield>
                    <subfield code = 'f'>#{extent['extent_type']})</subfield>"
         end
@@ -271,7 +288,7 @@ class MarcAOMapper
       # process tag number
       agents_processed.map do |agent|
       tag =
-        if agent['role'] == 'creator' && (agent['type'] == 'agent_person' || agent['type'] == 'agent_family')
+        if (agent['role'] == 'creator' || agent['role'] == 'source') && (agent['type'] == 'agent_person' || agent['type'] == 'agent_family')
           700
         elsif agent['role'] == 'subject' && (agent['type'] == 'agent_person' || agent['type'] == 'agent_family')
           600
@@ -304,12 +321,12 @@ class MarcAOMapper
         end
       dates = "<subfield code='d'>#{agent['name_dates']}</subfield>" unless agent['name_dates'].nil?
       subfield_e =
-        if
-            agent['relator'].nil?
+        if agent['relator'].nil?
           nil
         elsif agent['relator'].length == 3
           "<subfield code='4'>#{agent['relator']}</subfield>"
-        else "<subfield code='e'>#{agent['relator']}</subfield>"
+        else
+          "<subfield code='e'>#{agent['relator']}</subfield>"
         end
       subfield_2 = source_code == 7 ? "<subfield code = '2'>#{agent['source']}</subfield>" : nil
       add_punctuation = agent['name_dates'].nil? ? '.' : ','
@@ -345,25 +362,24 @@ class MarcAOMapper
         case subject['type']
         when 'cultural_context'
           647
-        when 'topical'
+        when 'topical' || 'temporal'
           650
         when 'geographic'
           651
-        when 'temporal'
-          650
         when 'genre_form'
           655
         end
       source_code =
         if subject['source'] == 'lcsh' || subject['source'] == 'Library of Congress Subject Headings'
           0
-        else 7
+        else
+          7
         end
       main_term = subject['main_term']
-      subterms = subject['terms'][1..-1].map do |subterm|
+      subterms = subject['terms'][1..].map do |subterm|
         subfield_code =
           case subterm['term_type']
-          when 'temporal', 'style_period', 'cultural_context'
+          when 'temporal' || 'style_period' || 'cultural_context'
             'y'
           when 'genre_form'
             'v'
@@ -379,7 +395,7 @@ class MarcAOMapper
         if subject['terms'].count == 1 && subject['full_first_term'] =~ /--/
           tokens = subject['full_first_term'].split('--')
           tokens.each(&:strip!)
-          tokens[1..-1].map do |token|
+          tokens[1..].map do |token|
           subfield_code = token =~ /^[0-9]{2}/ ? 'y' : 'x'
           "<subfield code = '#{subfield_code}'>#{token}</subfield>"
         end
@@ -433,5 +449,4 @@ class MarcAOMapper
             #{tag982 ||= ''}
           </record>"
   end
-
 end
