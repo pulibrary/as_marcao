@@ -1,0 +1,28 @@
+en:
+  marcao:
+    report:
+      title: MARC AO Report
+      button_label: MARC AO Report
+      last_report_title: Last Export
+      status: Status
+      no_report: No report available. Either it has yet to complete a successful run, or the report file has been removed.
+      error: Error
+      never: Never
+      last_success_at: Last Success At
+      export_started_at: Started At
+      export_completed_at: Completed At
+      resource_ids_selected: Resource IDs
+      archival_objects_exported: AOs Exported
+      export_file: Export File Path
+      sftp_host: SFTP Host
+    configuration:
+      title: Configuration
+      schedule: Schedule
+      resource_selector: Resource Selector
+      flag_field: Resource Selector
+      sftp_enabled: SFTP
+      sftp_not_enabled: NOT ENABLED
+      sftp_host: SFTP Host
+      sftp_user: SFTP User
+      sftp_password: SFTP Password
+      sftp_path: SFTP Path
