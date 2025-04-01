@@ -72,7 +72,6 @@ class MarcAOMapper
                 get_ao['dates'][0]['end'].gsub(/(^)(\d{4})(.*$)/, '\2')
               else
                 date1
-                # # 4 blanks
               end
     end
 
