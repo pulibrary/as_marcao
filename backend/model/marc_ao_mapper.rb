@@ -176,7 +176,7 @@ class MarcAOMapper
       }
     end
     # add controlfields
-    leader = "<leader>00000n#{leader_06[0]}maa22000002u 4500</leader>"
+    leader = "<leader>00000n#{leader_06[0] || 't'}maa22000002u 4500</leader>"
     tag001 = "<controlfield tag='001'>#{ref_id}</controlfield>"
     tag003 = "<controlfield tag='003'>PULFA</controlfield>"
     tag008 = Nokogiri::XML.fragment("<controlfield tag='008'>000000#{tag008_date_type}#{date1}#{date2}xx      |           #{tag008_langcode} d</controlfield>")
