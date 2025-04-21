@@ -72,13 +72,12 @@ class MarcAOMapper
                 get_ao['dates'][0]['end'].gsub(/(^)(\d{4})(.*$)/, '\2')
               else
                 date1
-                # # 4 blanks
               end
     end
 
     language = get_ao.dig('lang_materials', 0, 'language_and_script', 'language')
-    tag008_langcode =
-      language || 'eng'
+    tag008_langcode = language || 'eng'
+
     # process the notes requested
     notes = get_ao['notes']
     restrictions_hash = notes.select { |hash| hash['type'] == 'accessrestrict' }
@@ -103,6 +102,7 @@ class MarcAOMapper
     end
 
     extents = get_ao['extents']
+
     # process linked agents
     agents = get_ao['linked_agents']
     agents_processed = agents.map do |agent|
@@ -175,8 +175,8 @@ class MarcAOMapper
         'terms' => subject['_resolved']['terms']
       }
     end
-    # add controlfields
-    leader = "<leader>00000n#{leader_06[0]}maa22000002u 4500</leader>"
+    # add controlfields 
+    leader = "<leader>00000n#{leader_06[0] || 't'}maa22000002u 4500</leader>"
     tag001 = "<controlfield tag='001'>#{ref_id}</controlfield>"
     tag003 = "<controlfield tag='003'>PULFA</controlfield>"
     tag008 = Nokogiri::XML.fragment("<controlfield tag='008'>000000#{tag008_date_type}#{date1}#{date2}xx      |           #{tag008_langcode} d</controlfield>")
