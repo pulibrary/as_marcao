@@ -135,7 +135,7 @@ class MarcAOMapper
         "m"
       when "graphic_materials"
         "k"
-      when "microform" || "moving_images"
+      when "microform", "moving_images"
         "g"
       else
         "t"
@@ -362,7 +362,7 @@ class MarcAOMapper
         case subject['type']
         when 'cultural_context'
           647
-        when 'topical' || 'temporal'
+        when 'topical', 'temporal'
           650
         when 'geographic'
           651
@@ -379,7 +379,7 @@ class MarcAOMapper
       subterms = subject['terms'][1..-1].map do |subterm|
         subfield_code =
           case subterm['term_type']
-          when 'temporal' || 'style_period' || 'cultural_context'
+          when 'temporal', 'style_period', 'cultural_context'
             'y'
           when 'genre_form'
             'v'
