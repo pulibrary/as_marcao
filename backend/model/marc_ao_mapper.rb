@@ -72,13 +72,12 @@ class MarcAOMapper
                 get_ao['dates'][0]['end'].gsub(/(^)(\d{4})(.*$)/, '\2')
               else
                 date1
-                # # 4 blanks
               end
     end
 
     language = get_ao.dig('lang_materials', 0, 'language_and_script', 'language')
-    tag008_langcode =
-      language || 'eng'
+    tag008_langcode = language || 'eng'
+
     # process the notes requested
     notes = get_ao['notes']
     restrictions_hash = notes.select { |hash| hash['type'] == 'accessrestrict' }
@@ -103,6 +102,7 @@ class MarcAOMapper
     end
 
     extents = get_ao['extents']
+
     # process linked agents
     agents = get_ao['linked_agents']
     agents_processed = agents.map do |agent|
