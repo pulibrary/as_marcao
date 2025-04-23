@@ -34,7 +34,7 @@ class MarcAOExporter
       File.rename(export_file_path + ".tmp", export_file_path)
     rescue => e
       status = :export_fail
-      error = e.message
+      error = "#{e.message} #{e.backtrace}"
     end
 
     if status == :ok
