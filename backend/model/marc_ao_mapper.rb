@@ -125,7 +125,7 @@ class MarcAOMapper
     instances = get_ao['instances']
 
     #map instance types
-    leader_06 = instances.map do |instance|
+    leader_06 = instances&.map do |instance|
       case instance['instance_type']
       when "audio"
         "i"
@@ -143,10 +143,10 @@ class MarcAOMapper
     end
 
     # process locations
-    instances.select {|instance| instance['instance_type'] == "mixed_materials"}
+    instances&.select {|instance| instance['instance_type'] == "mixed_materials"}
 
     #process containers first
-    top_containers = instances.map do |instance|
+    top_containers = instances&.map do |instance|
       if instance['sub_container'].nil? == false
         instance['sub_container']['top_container']['_resolved']
       elsif instance['top_container']
@@ -154,9 +154,7 @@ class MarcAOMapper
       end
     end
 
-    if !top_containers.empty? && !top_containers.first['container_locations'].empty?
-        top_container_location_code = top_containers.first['container_locations'][0]['_resolved']['classification']
-      end
+    top_container_location_code = top_containers&.first&.dig('container_locations',0,'_resolved','classification')
 
     #process linked subjects
     subjects = get_ao['subjects']
