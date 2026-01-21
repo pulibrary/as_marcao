@@ -329,6 +329,11 @@ class MarcAOMapper
       subfield_2 = source_code == 7 ? "<subfield code = '2'>#{agent['source']}</subfield>" : nil
       add_punctuation = agent['name_dates'].nil? ? '.' : ','
       subfield_0 = agent['identifier'].nil? ? nil : "<subfield code = '0'>#{agent['identifier']}</subfield>"
+      #addresses #795
+      subfield_5 = 
+        if agent['source'] == 'local'
+          '<subfield code="5">NjP</subfield>'
+        end
       # create 1xx
       # add lookahead to replace ampersands (but not entity names)
       tag1xx <<
@@ -373,6 +378,7 @@ class MarcAOMapper
         else
           7
         end
+
       main_term = subject['main_term']
       subterms = subject['terms'][1..-1].map do |subterm|
         subfield_code =
@@ -400,13 +406,18 @@ class MarcAOMapper
         end
       #add subfield 2 if source code is 7
       subfield_2 = source_code == 7 ? "<subfield code = '2'>#{subject['source']}</subfield>" : nil
-
+      # addresses github #795
+      subfield_5 = 
+        if subject['source'] == 'local'
+          '<subfield code="5">NjP</subfield>'
+        end
       #put the field together
       "<datafield ind1=' ' ind2='#{source_code}' tag='#{tag}'>
               <subfield code = 'a'>#{main_term}</subfield>
                 #{subterms.join(' ')}
                 #{computed_subterms.join(' ') unless computed_subterms.nil?}
                 #{subfield_2}
+                #{subfield_5}
               </datafield>"
     end
 
@@ -422,6 +433,7 @@ class MarcAOMapper
     unless top_container_location_code&.nil?
       "<datafield ind1=' ' ind2=' ' tag='982'><subfield code='c'>#{top_container_location_code}</subfield></datafield>"
     end
+
     # assemble the record
     record =
       "<record>
