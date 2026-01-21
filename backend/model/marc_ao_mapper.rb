@@ -344,6 +344,7 @@ class MarcAOMapper
                   #{subfield_e ||= ''}
                   #{subfield_2 ||= ''}
                   #{subfield_0 ||= ''}
+                  #{subfield_5}
                 </datafield>"
         end
       "<datafield ind1='#{name_type}' ind2='#{tag.to_s[0]=='7' ? ' ' : source_code}' tag='#{tag}'>
@@ -352,6 +353,7 @@ class MarcAOMapper
               #{subfield_e ||= ''}
               #{subfield_2 ||= ''}
               #{subfield_0 ||= ''}
+              #{subfield_5}
             </datafield>"
     end
 
